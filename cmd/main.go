@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	serverRouter "chopipay/internal/http/routes/server"
+	mpRouter "chopipay/internal/http/routes/mp"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 
 	log.Println("Registering routes...")
 	serverRouter.RegisterRoutes(router)
+	mpRouter.RegisterRoutes(router)
 
 	log.Println("Server is running on port 8080")
 	router.Run(":8080")
