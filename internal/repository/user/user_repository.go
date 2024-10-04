@@ -12,21 +12,33 @@ import (
 
 func Create(user *entities.User) (error) {
 	_, err := pg.Db.Model(user).Insert(context.Background())
+	if err == nil {
+		return nil
+	}
 	return errors.New("Error creating user: " + err.Error())
 }
 
 func FindByID(id int) (*entities.User, error) {
 	user := &entities.User{ID: id}
 	err := pg.Db.Model(user).WherePK().Select(context.Background())
-	return user, errors.New("Error finding user: " + err.Error())
+	if err != nil {
+		return nil, errors.New("Error getting user by ID: " + err.Error())
+	}
+	return user, nil
 }
 
 func Update(user *entities.User) (error) {
 	_, err := pg.Db.Model(user).WherePK().Update(context.Background())
-	return errors.New("Error updating user: " + err.Error())
+	if err != nil {
+		return errors.New("Error updating user: " + err.Error())
+	}
+	return nil
 }
 
 func Delete(user *entities.User) (error) {
 	_, err := pg.Db.Model(user).WherePK().Delete(context.Background())
-	return errors.New("Error deleting user: " + err.Error())
+	if err != nil {
+		return errors.New("Error deleting user: " + err.Error())
+	}
+	return nil
 }
