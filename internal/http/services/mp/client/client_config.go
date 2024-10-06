@@ -6,6 +6,8 @@ import (
 
 	"github.com/mercadopago/sdk-go/pkg/config"
 	"github.com/mercadopago/sdk-go/pkg/preference"
+	"github.com/mercadopago/sdk-go/pkg/payment"
+	"github.com/mercadopago/sdk-go/pkg/merchantorder"
 )
 
 const logTag = "MP_ClientConfig | "
@@ -28,4 +30,25 @@ func GetPreferenceClient(cfg *config.Config) *preference.Client {
 	client := preference.NewClient(cfg)
 
 	return &client
+}
+
+func GetClient(accessToken string, clientType string) interface{} {
+	log.Println(logTag + "Getting MercadoPago client...")
+
+	cfg, err := InitClientConfig(accessToken)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	switch clientType {
+		case "preference":
+			return preference.NewClient(cfg)
+		case "payment":
+			return payment.NewClient(cfg)
+		case "merchant_order":
+			return merchantorder.NewClient(cfg)
+		default:
+			return errors.New("client type not found: " + clientType)
+	}
 }

@@ -63,3 +63,17 @@ func GetPersonalCredentialsByUsername(username string) (*entities.PersonalCreden
 	}
 	return personalCredentials, nil
 }
+
+func GetPersonalCredentialsByShopID(shopID int) (*entities.PersonalCredentials, error) {
+	personalCredentials := &entities.PersonalCredentials{}
+	err := pg.Db.Model(personalCredentials).
+				Join("JOIN personals AS personal ON personal.id = personal_credentials.personal_id").
+				Join("JOIN shops AS shop ON shop.personal_id = personal.id").
+				Where("shop.id = ?", shopID).
+				Select(context.Background())
+
+	if err != nil {
+		return nil, errors.New("Error getting personal credentials by shopID: " + err.Error())
+	}
+	return personalCredentials, nil
+}

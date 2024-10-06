@@ -1,17 +1,20 @@
 package product
+
 import (
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mercadopago/sdk-go/pkg/preference"
 
-	"chopipay/internal/models/entities"
-	productServices "chopipay/internal/http/services/app/product"
-	personalServices "chopipay/internal/http/services/app/personal"
-	mpClientServices "chopipay/internal/http/services/mp/client" 
-	mpPreferenceServices "chopipay/internal/http/services/mp/preference"
 	errorshandler "chopipay/internal/http/errors_handler"
 	securityUtils "chopipay/internal/http/security/utils"
+	personalServices "chopipay/internal/http/services/app/personal"
+	productServices "chopipay/internal/http/services/app/product"
+	mpClientServices "chopipay/internal/http/services/mp/client"
+	mpPreferenceServices "chopipay/internal/http/services/mp/preference"
+	_ "chopipay/internal/models/dto"
+	"chopipay/internal/models/entities"
 )
 
 const logTag = "product_controller | "
@@ -42,37 +45,28 @@ func Create(c *gin.Context) {
 	}
 
 	if isPreference {
-		currentUsername, err := securityUtils.GetCurrentUser(c)
+		preferenceClient, err := getPreferenceClient(c)
 		if err != nil {
-			errorshandler.ErrorHandler(c, err, logTag + "Error getting current user")
+			errorshandler.ErrorHandler(c, err, logTag + "Error getting preference client")
 			return
 		}
 
-		personalCredentials, err := personalServices.GetPersonalCredentialsByUsername(currentUsername)
-		if err != nil {
-			errorshandler.ErrorHandler(c, err, logTag + "Error getting personal credentials by username")
-			return
-		}
-
-		cfg, err := mpClientServices.InitClientConfig(personalCredentials.AccessToken)
-		if err != nil {
-			errorshandler.ErrorHandler(c, err, logTag + "Error initializing MercadoPago")
-			return
-		}
-
-		client := mpClientServices.GetPreferenceClient(cfg)
-
-		err = mpPreferenceServices.CreatePreference(*client, &product)
+		productPreferenceDTO, err := mpPreferenceServices.CreatePreference(*preferenceClient, &product)
 		if err != nil {
 			errorshandler.ErrorHandler(c, err, logTag + "Error creating MercadoPago preference")
 			return
 		}
 
-		err = productServices.Update(&product, true)
+		product.PreferenceID = productPreferenceDTO.PreferenceID
+
+		err = productServices.Update(&product)
 		if err != nil {
 			errorshandler.ErrorHandler(c, err, logTag + "Error updating product")
 			return
 		}
+	
+		c.JSON(http.StatusCreated, productPreferenceDTO)
+		return
 	}
 	
 	c.JSON(http.StatusCreated, product)
@@ -86,9 +80,36 @@ func FindByID(c *gin.Context) {
 		return
 	}
 
+	isPreference := false
+	isPreferenceParam := c.Query("isPreference")
+	if isPreferenceParam != "" {
+		isPreference, err = strconv.ParseBool(isPreferenceParam)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error converting isPreference")
+			return
+		}
+	}
+
 	product, err := productServices.FindByID(id_val)
 	if err != nil {
 		errorshandler.ErrorHandler(c, err, logTag + "Error finding product by id " + id)
+		return
+	}
+
+	if isPreference && product.PreferenceID != "" {
+		preferenceClient, err := getPreferenceClient(c)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error getting preference client")
+			return
+		}
+
+		productPreferenceDTO, err := mpPreferenceServices.GetPreference(*preferenceClient, product.PreferenceID)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error getting MercadoPago preference")
+			return
+		}
+
+		c.JSON(http.StatusOK, productPreferenceDTO)
 		return
 	}
 
@@ -112,7 +133,7 @@ func Update(c *gin.Context) {
 
 	product.ID = id_val
 
-	err = productServices.Update(&product, false)
+	err = productServices.Update(&product)
 	if err != nil {
 		errorshandler.ErrorHandler(c, err, logTag + "Error updating product")
 		return
@@ -136,4 +157,23 @@ func Delete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
+}
+
+func getPreferenceClient(c *gin.Context) (*preference.Client, error) {
+	currentUsername, err := securityUtils.GetCurrentUser(c)
+	if err != nil {
+		return nil, err
+	}
+
+	personalCredentials, err := personalServices.GetPersonalCredentialsByUsername(currentUsername)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg, err := mpClientServices.InitClientConfig(personalCredentials.AccessToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return mpClientServices.GetPreferenceClient(cfg), nil
 }

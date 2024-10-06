@@ -5,126 +5,88 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mercadopago/sdk-go/pkg/preference"
+	"github.com/mercadopago/sdk-go/pkg/merchantorder"
 	_ "github.com/mercadopago/sdk-go/pkg/payment"
+	_ "github.com/mercadopago/sdk-go/pkg/preference"
 
-	mpConfig "chopipay/config/mercadopago"
-	errorshandler "chopipay/internal/http/errors_handler"
+	personalServices "chopipay/internal/http/services/app/personal"
+	productServices "chopipay/internal/http/services/app/product"
+	mpCientServices "chopipay/internal/http/services/mp/client"
+	mpDtos "chopipay/internal/models/dto/mp"
 )
-
-func CreatePreference(c *gin.Context) {
-	log.Println("Creating MercadoPago preference...")
-
-	log.Println("Initializing MercadoPago config...")
-
-	cfg, err := mpConfig.Initialize()
-	if err != nil {
-		errorshandler.ErrorHandler(c, err, "Error initializing MercadoPago")
-		return
-	}
-
-	log.Printf("Config: %+v", cfg)
-
-	client := preference.NewClient(cfg.Cfg)
-
-	request := preference.Request{
-		Items: []preference.ItemRequest{
-			{
-				Title:       "My product 3",
-				Quantity:    1,
-				UnitPrice:   123,
-			},
-		},
-		NotificationURL: "https://06b7-186-138-229-135.ngrok-free.app/mp/payment/notification?userId=12345",
-		ExternalReference: "vendedor_carlos",
-	}
-
-	resource, err := client.Create(context.Background(), request)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println(resource)
-
-	// Return resource as JSON
-	jsonResource, err := json.Marshal(resource)
-	if err != nil {
-		errorshandler.ErrorHandler(c, err, "Error marshalling resource")
-		return
-	}
-
-	log.Println("json Resource: ", string(jsonResource))
-
-	c.JSON(http.StatusOK, gin.H{
-		"resource": resource,
-	})
-}
-
-func GetPreference(c *gin.Context) {
-	log.Println("Getting MercadoPago preference...")
-
-	log.Println("Initializing MercadoPago config...")
-
-	cfg, err := mpConfig.Initialize()
-	if err != nil {
-		errorshandler.ErrorHandler(c, err, "Error initializing MercadoPago")
-		return
-	}
-
-	log.Printf("Config: %+v", cfg)
-
-	client := preference.NewClient(cfg.Cfg)
-	// items := preference.Get(context.Background(), )
-	resource, err := client.Get(context.Background(), "2013036600-05e83294-ed4c-41af-884b-108ab9e4cb1f")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println(resource)
-
-	// Return resource as JSON
-	jsonResource, err := json.Marshal(resource)
-	if err != nil {
-		errorshandler.ErrorHandler(c, err, "Error marshalling resource")
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"resource": jsonResource,
-	})
-}
 
 func PaymentNotification(c *gin.Context) {
 	log.Println("Receiving payment notification...")
 
-	/* id := c.Query("id")
-	topic := c.Query("topic")
+	param_productId := c.Request.URL.Query().Get("productId")
+	param_id := c.Request.URL.Query().Get("id")
+	param_topic := c.Request.URL.Query().Get("topic")
 
-	switch topic {
-		case "payment":
-			payment := payment.NewClient()
-			payment.Get(context.Background(), 123)
-			log.Println("Payment received: ", id)
-		case "merchant_order":
-			log.Println("Merchant order received: ", id)
-		default:
-			log.Println("Unknown topic: ", topic)
-	} */
-	
-	paymentBody, err := c.GetRawData()
-	if err != nil {
-		errorshandler.ErrorHandler(c, err, "Error getting raw data")
-		return
+	log.Printf("Params: id=%s, productId=%s, topic=%s", param_id, param_productId, param_topic)
+
+	if param_id == "" || param_productId == "" || param_topic == "" {
+		log.Printf("id(%s),productId(%s) or topic(%s) is empty", param_id, param_productId, param_topic)
+		returnSuccess(c)
 	}
 
-	log.Println("body:\n ", string(paymentBody))
+	id, err := strconv.Atoi(param_id)
+	if err != nil || id == 0 {
+		log.Printf("error converting id %s. Cause: %s", param_id, err.Error())
+		returnSuccess(c)
+	}
 
-	params := c.Request.URL.Query()
-	log.Println("params:\n ", params)
+	productId, err := strconv.Atoi(param_productId)
+	if err != nil || productId == 0 {
+		log.Printf("error converting productId %s. Cause: %s", param_productId, err.Error())
+		returnSuccess(c)
+	}
 
+	log.Printf("Values: id=%d, productId=%d, topic=%s", id, productId, param_topic)
+
+	product, err := productServices.FindByID(productId)
+	if err != nil {
+		log.Println("Error finding product by id: ", err.Error())
+		returnSuccess(c)
+	}
+	log.Println("Product found: ", product.ID)
+
+	credentials, err := personalServices.GetPersonalCredentialsByShopID(product.ShopID)
+	if err != nil {
+		log.Println("Error getting personal credentials by shop id: ", err.Error())
+		returnSuccess(c)
+	}
+
+	if param_topic == "merchant_order" {
+		log.Println("processing merchant_order: ", id)
+		client := mpCientServices.GetClient(credentials.AccessToken, param_topic)
+		if err, ok := client.(error); ok {
+			log.Println("Error getting client: ", err.Error())
+			returnSuccess(c)
+		}
+		client.(merchantorder.Client).Get(context.Background(), id)
+		log.Println("Merchant order received: ", id)
+		paymentBody, err := c.GetRawData()
+		if err != nil {
+			log.Println("Error getting body: ", err.Error())
+			returnSuccess(c)
+		}
+
+		var notification mpDtos.NotificationsDTO
+		err = json.Unmarshal(paymentBody, &notification)
+		if err != nil {
+			log.Println("Error parsing body: ", err.Error())
+			returnSuccess(c)
+		}
+	}
+
+	returnSuccess(c)
+}
+
+func returnSuccess(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"notification": "paymente received",
+		"notification": "received",
 	})
-} 
+}

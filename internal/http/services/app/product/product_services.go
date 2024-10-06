@@ -21,7 +21,7 @@ func Create(product *entities.Product) error {
 	return nil
 }
 
-func Update(product *entities.Product, isPreference bool) error {
+func Update(product *entities.Product) error {
 	err := productRepository.Update(product)
 	if err != nil {
 		errorMessage := logTag + "Error updating product: " + err.Error()

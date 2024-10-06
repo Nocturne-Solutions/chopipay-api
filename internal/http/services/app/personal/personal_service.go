@@ -53,3 +53,12 @@ func GetPersonalCredentialsByUsername(username string) (*entities.PersonalCreden
 	}
 	return personalCredentials, nil
 }
+
+func GetPersonalCredentialsByShopID(shopID int) (*entities.PersonalCredentials, error) {
+	personalCredentials, err := personalRepository.GetPersonalCredentialsByShopID(shopID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return personalCredentials, nil
+}
