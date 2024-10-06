@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"chopipay/internal/models/entities"
+	"chopipay/internal/models/dto"
 	userServices "chopipay/internal/http/services/app/user"
 	errorshandler "chopipay/internal/http/errors_handler"
 )
@@ -27,7 +28,10 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, user)
+	c.JSON(http.StatusCreated, dto.UserDTO{
+		ID:       user.ID,
+		Username: user.Username,
+	})
 }
 
 func FindByID(c *gin.Context) {
@@ -44,7 +48,10 @@ func FindByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, dto.UserDTO{
+		ID:       user.ID,
+		Username: user.Username,
+	})
 }
 
 func Update(c *gin.Context) {
@@ -68,6 +75,7 @@ func Update(c *gin.Context) {
 		return
 	}
 	userToUpdate.ID = id_val
+	userToUpdate.Username = user.Username
 
 	err = userServices.Update(&userToUpdate)
 	if err != nil {
@@ -75,7 +83,10 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, dto.UserDTO{
+		ID:       userToUpdate.ID,
+		Username: userToUpdate.Username,
+	})
 }
 
 func Delete(c *gin.Context) {
@@ -98,5 +109,8 @@ func Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, dto.UserDTO{
+		ID:       user.ID,
+		Username: user.Username,
+	})
 }
