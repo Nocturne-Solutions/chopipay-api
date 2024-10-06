@@ -9,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const accessTokenDuration = time.Minute * 5
-const refreshTokenDuration = time.Minute * 15
+const accessTokenDuration = time.Minute * 120
+const refreshTokenDuration = time.Minute * 130
 
 func CreateAccessToken(username string) (*dto.Jwt, error) {
 	accessToken, err := generateJwt(username, "access_token")

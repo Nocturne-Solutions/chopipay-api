@@ -49,3 +49,17 @@ func Delete(personal *entities.Personal) error {
 	}
 	return nil
 }
+
+func GetPersonalCredentialsByUsername(username string) (*entities.PersonalCredentials, error) {
+	personalCredentials := &entities.PersonalCredentials{}
+	err := pg.Db.Model(personalCredentials).
+				Join("JOIN personals AS personal ON personal.id = personal_credentials.personal_id").
+				Join("JOIN users AS usr ON usr.id = personal.user_id").
+				Where("usr.username = ?", username).
+				Select(context.Background())
+
+	if err != nil {
+		return nil, errors.New("Error getting personal credentials by username: " + err.Error())
+	}
+	return personalCredentials, nil
+}

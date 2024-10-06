@@ -8,6 +8,7 @@ import (
 	shopRouter "chopipay/internal/http/routes/shop"
 	mpRouter "chopipay/internal/http/routes/mp"
 	personalRouter "chopipay/internal/http/routes/personal"
+	productRouter "chopipay/internal/http/routes/product"
 	serverRouter "chopipay/internal/http/routes/server"
 	userRouter "chopipay/internal/http/routes/user"
 	authRouter "chopipay/internal/http/routes/auth"
@@ -20,6 +21,7 @@ func RegisterRoutes(router *gin.Engine) {
 	mpRouter.RegisterRoutes(router)
 	userRouter.RegisterRoutes(router)
 	personalRouter.RegisterRoutes(router)
+	productRouter.RegisterRoutes(router)
 	shopRouter.RegisterRoutes(router)
 	authRouter.RegisterRoutes(router)
 

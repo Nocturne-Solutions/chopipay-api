@@ -7,7 +7,11 @@ import (
 
 	"chopipay/internal/models/entities"
 	productServices "chopipay/internal/http/services/app/product"
+	personalServices "chopipay/internal/http/services/app/personal"
+	mpClientServices "chopipay/internal/http/services/mp/client" 
+	mpPreferenceServices "chopipay/internal/http/services/mp/preference"
 	errorshandler "chopipay/internal/http/errors_handler"
+	securityUtils "chopipay/internal/http/security/utils"
 )
 
 const logTag = "product_controller | "
@@ -19,6 +23,17 @@ func Create(c *gin.Context) {
 		errorshandler.ErrorHandler(c, err, logTag + "Error binding product")
 		return
 	}
+	
+	isPreference := false
+	isPreferenceParam := c.Query("isPreference")
+	if isPreferenceParam != "" {
+		isPreference, err = strconv.ParseBool(isPreferenceParam)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error converting isPreference")
+			return
+		}
+	}
+
 
 	err = productServices.Create(&product)
 	if err != nil {
@@ -26,6 +41,40 @@ func Create(c *gin.Context) {
 		return
 	}
 
+	if isPreference {
+		currentUsername, err := securityUtils.GetCurrentUser(c)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error getting current user")
+			return
+		}
+
+		personalCredentials, err := personalServices.GetPersonalCredentialsByUsername(currentUsername)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error getting personal credentials by username")
+			return
+		}
+
+		cfg, err := mpClientServices.InitClientConfig(personalCredentials.AccessToken)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error initializing MercadoPago")
+			return
+		}
+
+		client := mpClientServices.GetPreferenceClient(cfg)
+
+		err = mpPreferenceServices.CreatePreference(*client, &product)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error creating MercadoPago preference")
+			return
+		}
+
+		err = productServices.Update(&product, true)
+		if err != nil {
+			errorshandler.ErrorHandler(c, err, logTag + "Error updating product")
+			return
+		}
+	}
+	
 	c.JSON(http.StatusCreated, product)
 }
 
@@ -63,7 +112,7 @@ func Update(c *gin.Context) {
 
 	product.ID = id_val
 
-	err = productServices.Update(&product)
+	err = productServices.Update(&product, false)
 	if err != nil {
 		errorshandler.ErrorHandler(c, err, logTag + "Error updating product")
 		return

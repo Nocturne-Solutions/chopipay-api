@@ -44,3 +44,12 @@ func Delete(personal *entities.Personal) error {
 	}
 	return nil
 }
+
+func GetPersonalCredentialsByUsername(username string) (*entities.PersonalCredentials, error) {
+	personalCredentials, err := personalRepository.GetPersonalCredentialsByUsername(username)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return personalCredentials, nil
+}
