@@ -42,3 +42,14 @@ func Delete(user *entities.User) (error) {
 	}
 	return nil
 }
+
+func FindByUsername(username string) (*entities.User, error) {
+	user := &entities.User{Username: username}
+	err := pg.Db.Model(user).
+				Where("username = ?", username).
+				Select(context.Background())
+	if err != nil {
+		return nil, errors.New("Error getting user by username: " + err.Error())
+	}
+	return user, nil
+}

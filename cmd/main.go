@@ -6,12 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"chopipay/config/db/pg"
-
+	"chopipay/config/server"
 	"chopipay/internal/http/routes"
 )
 
 func main() {
 	log.Println("Initializing server...")
+
+	server.LoadEnvirontment()
+	log.Println("Environment variables initialized")
 
 	log.Println("Initializing database connection...")
 	err := pg.InitConnection()

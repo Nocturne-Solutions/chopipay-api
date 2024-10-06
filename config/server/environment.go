@@ -9,15 +9,13 @@ import (
 
 const envFile = ".env"
 
-var EnvVars map[string]string
+var EnvVars = make(map[string]string)
 
-func Initialize() {
+func LoadEnvirontment() {
 	err := godotenv.Load(envFile)
 	if err != nil {
 		panic("Error loading .env file")
 	}
-
-	EnvVars = make(map[string]string)
 
 	for _, env := range os.Environ() {
 		pair := strings.Split(env, "=")

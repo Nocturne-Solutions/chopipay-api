@@ -3,12 +3,22 @@ package user
 import (
 	"log"
 
+	"chopipay/internal/http/security"
 	"chopipay/internal/models/entities"
 	userRepository "chopipay/internal/repository/user"
 )
 
 func Create(user *entities.User) (error) {
-	err := userRepository.Create(user)
+
+	hashedPassword, err := security.HashPassword(user.Password)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	user.Password = hashedPassword
+
+	err = userRepository.Create(user)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -42,5 +52,14 @@ func Delete(user *entities.User) (error) {
 		return err
 	}
 	return nil
+}
+
+func FindByUsername(username string) (*entities.User, error) {
+	user, err := userRepository.FindByUsername(username)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return user, nil
 }
 
