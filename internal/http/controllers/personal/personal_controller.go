@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"chopipay/internal/models/entities"
-	personalServices "chopipay/internal/http/services/user/app/personal"
+	personalServices "chopipay/internal/http/services/app/personal"
+	shopServices "chopipay/internal/http/services/app/shop"
+	credentialsServices "chopipay/internal/http/services/app/credentials"
 	errorshandler "chopipay/internal/http/errors_handler"
 )
 
@@ -97,4 +99,38 @@ func Delete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, personal)
+}
+
+func AddPersonalCredential(c *gin.Context) {
+	var personalCredential entities.PersonalCredentials
+	err := c.BindJSON(&personalCredential)
+	if err != nil {
+		errorshandler.ErrorHandler(c, err, logTag + "Error binding personal credential")
+		return
+	}
+
+	err = credentialsServices.AddPersonalCredential(&personalCredential)
+	if err != nil {
+		errorshandler.ErrorHandler(c, err, logTag + "Error adding personal credential")
+		return
+	}
+
+	c.JSON(http.StatusCreated, personalCredential)
+}
+
+func GetShopsByPersonalID(c *gin.Context) {
+	id := c.Param("id")
+	id_val, err := strconv.Atoi(id)
+	if err != nil {
+		errorshandler.ErrorHandler(c, err, logTag + "Error converting id")
+		return
+	}
+
+	shops, err := shopServices.GetAllByPersonalId(id_val)
+	if err != nil {
+		errorshandler.ErrorHandler(c, err, logTag + "Error getting shops by personal id " + id)
+		return
+	}
+
+	c.JSON(http.StatusOK, shops)
 }

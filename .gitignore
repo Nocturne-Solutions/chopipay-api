@@ -1,6 +1,7 @@
 /.vscode
 
 cuentas_prueba.txt
+*.sql
 
 .env
 .env.*

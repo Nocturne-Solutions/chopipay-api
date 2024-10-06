@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"chopipay/internal/models/entities"
-	userServices "chopipay/internal/http/services/user/app/user"
+	userServices "chopipay/internal/http/services/app/user"
 	errorshandler "chopipay/internal/http/errors_handler"
 )
 

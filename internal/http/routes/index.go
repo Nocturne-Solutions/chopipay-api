@@ -5,10 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	serverRouter "chopipay/internal/http/routes/server"
+	shopRouter "chopipay/internal/http/routes/shop"
 	mpRouter "chopipay/internal/http/routes/mp"
-	userRouter "chopipay/internal/http/routes/user"
 	personalRouter "chopipay/internal/http/routes/personal"
+	serverRouter "chopipay/internal/http/routes/server"
+	userRouter "chopipay/internal/http/routes/user"
 )
 
 func RegisterRoutes(router *gin.Engine) {
@@ -18,6 +19,7 @@ func RegisterRoutes(router *gin.Engine) {
 	mpRouter.RegisterRoutes(router)
 	userRouter.RegisterRoutes(router)
 	personalRouter.RegisterRoutes(router)
+	shopRouter.RegisterRoutes(router)
 
 	log.Println("Routes registered")
 }

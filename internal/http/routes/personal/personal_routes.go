@@ -11,4 +11,6 @@ func RegisterRoutes(router *gin.Engine) {
 	router.GET("/personal/:id", personalController.GetByID)
 	router.PUT("/personal/:id", personalController.Update)
 	router.DELETE("/personal/:id", personalController.Delete)
+	router.PUT("/personal/add-credential", personalController.AddPersonalCredential)
+	router.GET("/personal/:id/shops", personalController.GetShopsByPersonalID)
 }

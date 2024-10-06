@@ -5,5 +5,6 @@ type Product struct {
 	Name       string  `json:"name" pg:"name"`
 	Price      float64 `json:"price" pg:"price"`
 	Shop       *Shop   `json:"shop" pg:"rel:has-one, fk:shop_id, join_fk:shop_id"`
+	ShopID     int     `json:"shop_id" pg:"shop_id"`
 	WebhookURL string  `json:"webhook_url" pg:"webhook_url"`
 }
