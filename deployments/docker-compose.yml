@@ -9,3 +9,13 @@ services:
       - "5432:5432"
     env_file: 
       - .env.pg-db
+
+  rabbitmq:
+    container_name: chopipay-rabbitmq
+    image: rabbitmq:3.9.10-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file: 
+      - .env.rabbitmq

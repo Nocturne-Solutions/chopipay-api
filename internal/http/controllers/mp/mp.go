@@ -12,6 +12,7 @@ import (
 	_ "github.com/mercadopago/sdk-go/pkg/payment"
 	_ "github.com/mercadopago/sdk-go/pkg/preference"
 
+	rmqPublisher "chopipay/internal/rabbitmq/publisher"
 	personalServices "chopipay/internal/http/services/app/personal"
 	productServices "chopipay/internal/http/services/app/product"
 	mpCientServices "chopipay/internal/http/services/mp/client"
@@ -80,6 +81,8 @@ func PaymentNotification(c *gin.Context) {
 			log.Println("Error parsing body: ", err.Error())
 			returnSuccess(c)
 		}
+		
+		rmqPublisher.PublishMessage("mp_payment_notification", string(paymentBody))
 	}
 
 	returnSuccess(c)
