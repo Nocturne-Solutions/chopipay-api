@@ -12,6 +12,15 @@ import (
 
 const logTag = "auth_controller | "
 
+// AuthRoutes godoc
+// @Tags Auth
+// @Summary Login
+// @Description Login with email and password
+// @Accept  json
+// @Produce  json
+// @Param credentials body dto.Login true "Login data"
+// @Success 200 {object} dto.Jwt
+// @Router /auth/login [post]
 func Login(c *gin.Context) {
 	var credentials dto.Login
 	err := c.BindJSON(&credentials)
@@ -29,6 +38,14 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, token)
 }
 
+// AuthRoutes godoc
+// @Tags Auth
+// @Summary Refresh token
+// @Description Refresh token with refresh token
+// @Param refreshToken body dto.RefreshToken true "Refresh token data"
+// @Accept  json
+// @Produce  json
+// @Router /auth/refresh-token [post]
 func RefreshToken(c *gin.Context) {
 	// get the refresh token from the body request as "refresh_token"
 	var refreshToken dto.RefreshToken

@@ -1,0 +1,99 @@
+basePath: /api/v1
+definitions:
+  dto.Jwt:
+    properties:
+      access_token:
+        type: string
+      exp_in:
+        type: number
+      iat:
+        type: integer
+      refresh_token:
+        type: string
+    type: object
+  dto.Login:
+    properties:
+      password:
+        example: password
+        type: string
+      username:
+        example: username@gmail.com
+        type: string
+    type: object
+  dto.RefreshToken:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: nocturne.solutions@gmail.com
+    name: Nocturne Solutions
+    url: https://github.com/Nocturne-Solutions
+  description: This is the Chopipay API documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Chopipay API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with email and password
+      parameters:
+      - description: Login data
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Jwt'
+      summary: Login
+      tags:
+      - Auth
+  /auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Refresh token with refresh token
+      parameters:
+      - description: Refresh token data
+        in: body
+        name: refreshToken
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshToken'
+      produces:
+      - application/json
+      responses: {}
+      summary: Refresh token
+      tags:
+      - Auth
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Check if the server is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Server health check
+      tags:
+      - server
+swagger: "2.0"

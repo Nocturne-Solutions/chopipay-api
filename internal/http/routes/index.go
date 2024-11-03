@@ -4,6 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	shopRouter "chopipay/internal/http/routes/shop"
 	mpRouter "chopipay/internal/http/routes/mp"
@@ -16,6 +18,8 @@ import (
 
 func RegisterRoutes(router *gin.Engine) {
 	log.Println("Registering routes...")
+	
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	
 	serverRouter.RegisterRoutes(router)
 	mpRouter.RegisterRoutes(router)
