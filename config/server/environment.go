@@ -11,7 +11,7 @@ const envFile = ".env"
 
 var EnvVars = make(map[string]string)
 
-func LoadEnvirontment() {
+func LoadEnvironment() map[string]string {
 	err := godotenv.Load(envFile)
 	if err != nil {
 		panic("Error loading .env file")
@@ -21,4 +21,5 @@ func LoadEnvirontment() {
 		pair := strings.Split(env, "=")
 		EnvVars[pair[0]] = pair[1]
 	}
+	return EnvVars
 }

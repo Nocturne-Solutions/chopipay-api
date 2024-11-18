@@ -11,7 +11,7 @@ services:
       - .env.pg-db
 
   rabbitmq:
-    container_name: chopipay-rabbitmq
+    container_name: chopipay-queues
     image: rabbitmq:3.9.10-management
     restart: always
     ports:

@@ -9,7 +9,7 @@ import (
 
 var Db *pg.DB
 
-func InitConnection(envVars map[string]string) {
+func InitConnection(envVars map[string]string) *pg.DB {
 	host := envVars["PG_DB_HOST"]
 	port := envVars["PG_DB_PORT"]
 	user := envVars["PG_DB_USER"]
@@ -22,13 +22,14 @@ func InitConnection(envVars map[string]string) {
 
 	Db = pg.Connect(&pg.Options{
 		Addr:     host + ":" + port,
-		User: 	  user,
+		User:     user,
 		Password: password,
 		Database: database,
 	})
 
 	err := Db.Ping(context.Background())
 	failOnError(err, "Failed to connect to PostgreSQL")
+	return Db
 }
 
 func CloseConnection() {
@@ -38,8 +39,6 @@ func CloseConnection() {
 
 func failOnError(err error, msg string) {
 	if err != nil {
-	  log.Panicf("%s: %s", msg, err)
+		log.Panicf("%s: %s", msg, err)
 	}
 }
-
-

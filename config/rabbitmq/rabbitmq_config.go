@@ -2,7 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
-  	"log"
+	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -17,11 +17,11 @@ func InitRabbitMQ(envVars map[string]string) {
 	vhost := envVars["RABBITMQ_VHOST"]
 
 	if host == "" || port == "" || user == "" || password == "" || vhost == "" {
-		log.Fatal("Missing environment variables for rabbitmq connection")
+		log.Fatal("Missing environment variables for queues connection")
 	}
 
 	url := fmt.Sprintf("amqp://%s:%s@%s:%s/%s", user, password, host, port, vhost)
-	
+
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 
@@ -32,11 +32,11 @@ func InitRabbitMQ(envVars map[string]string) {
 func DeclareQueue(queueName string) {
 	_, err := Ch.QueueDeclare(
 		queueName, // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
+		false,     // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 }
@@ -47,6 +47,6 @@ func CloseRabbitMQChannel() {
 
 func failOnError(err error, msg string) {
 	if err != nil {
-	  log.Panicf("%s: %s", msg, err)
+		log.Panicf("%s: %s", msg, err)
 	}
 }

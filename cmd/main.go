@@ -3,15 +3,14 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
-	_ "chopipay/docs"
-
 	"chopipay/config/db/pg"
-	"chopipay/config/server"
+	"chopipay/config/di"
 	"chopipay/config/rabbitmq"
-	rmqConsumers "chopipay/internal/rabbitmq/consumer"
+	"chopipay/config/server"
+	_ "chopipay/docs"
 	"chopipay/internal/http/routes"
-	rmq "chopipay/internal/rabbitmq"
+	rmq "chopipay/internal/queues"
+	rmqConsumers "chopipay/internal/queues/consumer"
 )
 
 // @title Chopipay API
@@ -31,27 +30,31 @@ import (
 func main() {
 	log.Println("Initializing server...")
 
-	server.LoadEnvirontment()
+	server.LoadEnvironment()
 	log.Println("Environment variables initialized")
 
 	pg.InitConnection(server.EnvVars)
+	defer pg.CloseConnection()
 	log.Println("Database connection initialized")
 
+	init := di.Init()
+
 	rabbitmq.InitRabbitMQ(server.EnvVars)
+	defer rabbitmq.CloseRabbitMQChannel()
 	log.Println("RabbitMQ connection initialized")
 	rabbitmq.DeclareQueue(rmq.PreferenceNotificationQueue)
 	// add more queues here
 	log.Println("RabbitMQ queues declared successfully")
-	go rmqConsumers.ConsumePaymentNotifications(rmq.PreferenceNotificationQueue)
-	log.Printf("Consumming messages from RabbitMQ queue: %s", rmq.PreferenceNotificationQueue)
+	consumers := rmqConsumers.NewConsumer(rabbitmq.Ch, init.ProductServices, init.PersonalService)
+	go consumers.PaymentNotifications(rmq.PreferenceNotificationQueue)
 	log.Println("RabbitMQ connection initialized")
-	
-	router := gin.Default()
-	routes.RegisterRoutes(router)
-	
-	log.Println("Server is running on port 8080")
-	router.Run(":8080")
 
-	defer pg.CloseConnection()
-	defer rabbitmq.CloseRabbitMQChannel()
+	app := routes.InitRoutes(init)
+
+	log.Println("Server is running on port 8080")
+	err := app.Run(":8080")
+	if err != nil {
+		log.Println("Error starting server: ", err)
+		return
+	}
 }

@@ -1,4 +1,5 @@
 /.vscode
+.idea
 
 cuentas_prueba.txt
 *.sql
