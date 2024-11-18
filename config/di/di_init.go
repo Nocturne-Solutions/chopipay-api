@@ -21,6 +21,7 @@ type Initialization struct {
 	paymentMethodRepo           pg.PaymentMethodRepository
 	saleProductsRepo            pg.SaleProductsRepository
 	saleStatusRepo              pg.SalesStatusRepository
+	userRepo                    pg.UserRepository
 	/*	Services */
 	salesServices              services.SalesService
 	ProductServices            services.ProductService
@@ -46,6 +47,7 @@ func NewDiInit(salesRepo pg.SalesRepository,
 	paymentMethodRepo pg.PaymentMethodRepository,
 	saleProductsRepo pg.SaleProductsRepository,
 	saleStatusRepo pg.SalesStatusRepository,
+	userRepo pg.UserRepository,
 	/*	Services */
 	salesServices services.SalesService,
 	productServices services.ProductService,
@@ -71,6 +73,7 @@ func NewDiInit(salesRepo pg.SalesRepository,
 		paymentMethodRepo:           paymentMethodRepo,
 		saleProductsRepo:            saleProductsRepo,
 		saleStatusRepo:              saleStatusRepo,
+		userRepo:                    userRepo,
 		/*	Services */
 		salesServices:              salesServices,
 		ProductServices:            productServices,
