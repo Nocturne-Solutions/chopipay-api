@@ -26,6 +26,13 @@ func Init() *Initialization {
 	shopRepository := pg2.NewShopRepository(db)
 	personalRepository := pg2.NewPersonalRepository(db)
 	personalCredentialsRepository := pg2.NewPersonalCredentialsRepository(db)
+	mpMerchantOrderPaymentsRepository := pg2.NewMpMerchantOrderPaymentsRepository(db)
+	mpMerchantOrderRepository := pg2.NewMpMerchantOrderRepository(db)
+	mpPayerRepository := pg2.NewMpPayerRepository(db)
+	mpPaymentRepository := pg2.NewMpPaymentRepository(db)
+	paymentMethodRepository := pg2.NewPaymentMethodRepository(db)
+	saleProductsRepository := pg2.NewSaleProductsRepository(db)
+	salesStatusRepository := pg2.NewSalesStatusRepository(db)
 	salesService := services.NewSalesService(salesRepository, personalRepository)
 	productService := services.NewProductService(productRepository)
 	shopService := services.NewShopService(shopRepository)
@@ -35,7 +42,7 @@ func Init() *Initialization {
 	productController := controllers.NewProductController(productService, personalService)
 	shopController := controllers.NewShopController(shopService, productService)
 	personalController := controllers.NewPersonalController(personalService, shopService, personalCredentialsService)
-	initialization := NewDiInit(salesRepository, productRepository, shopRepository, personalRepository, personalCredentialsRepository, salesService, productService, shopService, personalService, personalCredentialsService, salesController, productController, shopController, personalController)
+	initialization := NewDiInit(salesRepository, productRepository, shopRepository, personalRepository, personalCredentialsRepository, mpMerchantOrderPaymentsRepository, mpMerchantOrderRepository, mpPayerRepository, mpPaymentRepository, paymentMethodRepository, saleProductsRepository, salesStatusRepository, salesService, productService, shopService, personalService, personalCredentialsService, salesController, productController, shopController, personalController)
 	return initialization
 }
 
@@ -55,6 +62,20 @@ var shopRepoSet = wire.NewSet(pg2.NewShopRepository)
 var personalRepoSet = wire.NewSet(pg2.NewPersonalRepository)
 
 var personalCredentialsRepoSet = wire.NewSet(pg2.NewPersonalCredentialsRepository)
+
+var mpMerchantOrderPaymentsRepoSet = wire.NewSet(pg2.NewMpMerchantOrderPaymentsRepository)
+
+var mpMerchantOrderRepoSet = wire.NewSet(pg2.NewMpMerchantOrderRepository)
+
+var mpPayerRepoSet = wire.NewSet(pg2.NewMpPayerRepository)
+
+var mpPaymentRepoSet = wire.NewSet(pg2.NewMpPaymentRepository)
+
+var paymentMethodRepoSet = wire.NewSet(pg2.NewPaymentMethodRepository)
+
+var saleProductsRepoSet = wire.NewSet(pg2.NewSaleProductsRepository)
+
+var saleStatusRepoSet = wire.NewSet(pg2.NewSalesStatusRepository)
 
 /*	Services */
 var salesServiceSet = wire.NewSet(services.NewSalesService)

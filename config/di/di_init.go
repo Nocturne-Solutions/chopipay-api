@@ -9,11 +9,18 @@ import (
 
 type Initialization struct {
 	/*	Repositories */
-	salesRepo               pg.SalesRepository
-	productRepo             pg.ProductRepository
-	shopRepo                pg.ShopRepository
-	personalRepo            pg.PersonalRepository
-	personalCredentialsRepo pg.PersonalCredentialsRepository
+	salesRepo                   pg.SalesRepository
+	productRepo                 pg.ProductRepository
+	shopRepo                    pg.ShopRepository
+	personalRepo                pg.PersonalRepository
+	personalCredentialsRepo     pg.PersonalCredentialsRepository
+	mpMerchantOrderPaymentsRepo pg.MpMerchantOrderPaymentsRepository
+	mpMerchantOrderRepo         pg.MpMerchantOrderRepository
+	mpPayerRepo                 pg.MpPayerRepository
+	mpPaymentRepo               pg.MpPaymentRepository
+	paymentMethodRepo           pg.PaymentMethodRepository
+	saleProductsRepo            pg.SaleProductsRepository
+	saleStatusRepo              pg.SalesStatusRepository
 	/*	Services */
 	salesServices              services.SalesService
 	ProductServices            services.ProductService
@@ -32,6 +39,13 @@ func NewDiInit(salesRepo pg.SalesRepository,
 	shopRepo pg.ShopRepository,
 	personalRepo pg.PersonalRepository,
 	personalCredentialsRepo pg.PersonalCredentialsRepository,
+	mpMerchantOrderPaymentsRepo pg.MpMerchantOrderPaymentsRepository,
+	mpMerchantOrderRepo pg.MpMerchantOrderRepository,
+	mpPayerRepo pg.MpPayerRepository,
+	mpPaymentRepo pg.MpPaymentRepository,
+	paymentMethodRepo pg.PaymentMethodRepository,
+	saleProductsRepo pg.SaleProductsRepository,
+	saleStatusRepo pg.SalesStatusRepository,
 	/*	Services */
 	salesServices services.SalesService,
 	productServices services.ProductService,
@@ -45,11 +59,18 @@ func NewDiInit(salesRepo pg.SalesRepository,
 	personalCtrl controllers.PersonalController) *Initialization {
 	return &Initialization{
 		/*	Repositories */
-		salesRepo:               salesRepo,
-		productRepo:             productRepo,
-		shopRepo:                shopRepo,
-		personalRepo:            personalRepo,
-		personalCredentialsRepo: personalCredentialsRepo,
+		salesRepo:                   salesRepo,
+		productRepo:                 productRepo,
+		shopRepo:                    shopRepo,
+		personalRepo:                personalRepo,
+		personalCredentialsRepo:     personalCredentialsRepo,
+		mpMerchantOrderPaymentsRepo: mpMerchantOrderPaymentsRepo,
+		mpMerchantOrderRepo:         mpMerchantOrderRepo,
+		mpPayerRepo:                 mpPayerRepo,
+		mpPaymentRepo:               mpPaymentRepo,
+		paymentMethodRepo:           paymentMethodRepo,
+		saleProductsRepo:            saleProductsRepo,
+		saleStatusRepo:              saleStatusRepo,
 		/*	Services */
 		salesServices:              salesServices,
 		ProductServices:            productServices,

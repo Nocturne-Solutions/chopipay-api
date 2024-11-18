@@ -24,6 +24,13 @@ var productRepoSet = wire.NewSet(pgRepo.NewProductRepository)
 var shopRepoSet = wire.NewSet(pgRepo.NewShopRepository)
 var personalRepoSet = wire.NewSet(pgRepo.NewPersonalRepository)
 var personalCredentialsRepoSet = wire.NewSet(pgRepo.NewPersonalCredentialsRepository)
+var mpMerchantOrderPaymentsRepoSet = wire.NewSet(pgRepo.NewMpMerchantOrderPaymentsRepository)
+var mpMerchantOrderRepoSet = wire.NewSet(pgRepo.NewMpMerchantOrderRepository)
+var mpPayerRepoSet = wire.NewSet(pgRepo.NewMpPayerRepository)
+var mpPaymentRepoSet = wire.NewSet(pgRepo.NewMpPaymentRepository)
+var paymentMethodRepoSet = wire.NewSet(pgRepo.NewPaymentMethodRepository)
+var saleProductsRepoSet = wire.NewSet(pgRepo.NewSaleProductsRepository)
+var saleStatusRepoSet = wire.NewSet(pgRepo.NewSalesStatusRepository)
 
 /*	Services */
 var salesServiceSet = wire.NewSet(services.NewSalesService)
@@ -46,7 +53,8 @@ func Init() *Initialization {
 		/*	Services */
 		salesServiceSet, productServiceSet, shopServiceSet, personalServiceSet, personalCredentialsServiceSet,
 		/*	Repositories */
-		salesRepoSet, productRepoSet, shopRepoSet, personalRepoSet, personalCredentialsRepoSet,
+		salesRepoSet, productRepoSet, shopRepoSet, personalRepoSet, personalCredentialsRepoSet, mpMerchantOrderPaymentsRepoSet,
+		mpMerchantOrderRepoSet, mpPayerRepoSet, mpPaymentRepoSet, paymentMethodRepoSet, saleProductsRepoSet, saleStatusRepoSet,
 	)
 
 	return nil
