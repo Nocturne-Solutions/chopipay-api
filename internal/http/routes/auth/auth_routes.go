@@ -1,15 +1,14 @@
 package auth
 
 import (
+	"chopipay/config/di"
 	"github.com/gin-gonic/gin"
-
-	authController	"chopipay/internal/http/controllers/auth"
 )
 
-func RegisterRoutes(router *gin.Engine) {
+func RegisterRoutes(router *gin.Engine, init *di.Initialization) {
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", authController.Login)
-		auth.POST("/refresh-token", authController.RefreshToken)
+		auth.POST("/login", init.AuthController.Login)
+		auth.POST("/refresh-token", init.AuthController.RefreshToken)
 	}
 }

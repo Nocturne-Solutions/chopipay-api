@@ -33,16 +33,21 @@ func Init() *Initialization {
 	paymentMethodRepository := pg2.NewPaymentMethodRepository(db)
 	saleProductsRepository := pg2.NewSaleProductsRepository(db)
 	salesStatusRepository := pg2.NewSalesStatusRepository(db)
+	userRepository := pg2.NewUserRepository(db)
 	salesService := services.NewSalesService(salesRepository, personalRepository)
 	productService := services.NewProductService(productRepository)
 	shopService := services.NewShopService(shopRepository)
 	personalService := services.NewPersonalService(personalRepository)
 	personalCredentialsService := services.NewPersonalCredentialsService(personalRepository, personalCredentialsRepository)
+	userService := services.NewUserService(userRepository)
+	authService := services.NewAuthService(userService)
 	salesController := business.NewSalesController(salesService)
 	productController := controllers.NewProductController(productService, personalService)
 	shopController := controllers.NewShopController(shopService, productService)
 	personalController := controllers.NewPersonalController(personalService, shopService, personalCredentialsService)
-	initialization := NewDiInit(salesRepository, productRepository, shopRepository, personalRepository, personalCredentialsRepository, mpMerchantOrderPaymentsRepository, mpMerchantOrderRepository, mpPayerRepository, mpPaymentRepository, paymentMethodRepository, saleProductsRepository, salesStatusRepository, salesService, productService, shopService, personalService, personalCredentialsService, salesController, productController, shopController, personalController)
+	userController := controllers.NewUserController(userService)
+	authController := controllers.NewAuthController(authService)
+	initialization := NewDiInit(salesRepository, productRepository, shopRepository, personalRepository, personalCredentialsRepository, mpMerchantOrderPaymentsRepository, mpMerchantOrderRepository, mpPayerRepository, mpPaymentRepository, paymentMethodRepository, saleProductsRepository, salesStatusRepository, userRepository, salesService, productService, shopService, personalService, personalCredentialsService, userService, authService, salesController, productController, shopController, personalController, userController, authController)
 	return initialization
 }
 
@@ -77,6 +82,8 @@ var saleProductsRepoSet = wire.NewSet(pg2.NewSaleProductsRepository)
 
 var saleStatusRepoSet = wire.NewSet(pg2.NewSalesStatusRepository)
 
+var userRepositorySet = wire.NewSet(pg2.NewUserRepository)
+
 /*	Services */
 var salesServiceSet = wire.NewSet(services.NewSalesService)
 
@@ -88,6 +95,10 @@ var personalServiceSet = wire.NewSet(services.NewPersonalService)
 
 var personalCredentialsServiceSet = wire.NewSet(services.NewPersonalCredentialsService)
 
+var userServiceSet = wire.NewSet(services.NewUserService)
+
+var authServiceSet = wire.NewSet(services.NewAuthService)
+
 /*	Controllers */
 var salesCtrlSet = wire.NewSet(business.NewSalesController)
 
@@ -96,3 +107,7 @@ var productCtrlSet = wire.NewSet(controllers.NewProductController)
 var shopCtrlSet = wire.NewSet(controllers.NewShopController)
 
 var personalCtrlSet = wire.NewSet(controllers.NewPersonalController)
+
+var userCtrlSet = wire.NewSet(controllers.NewUserController)
+
+var authCtrlSet = wire.NewSet(controllers.NewAuthController)

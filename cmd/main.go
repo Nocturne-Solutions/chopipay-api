@@ -28,6 +28,8 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 func main() {
+	log.SetPrefix("[chopipay-api] ")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("Initializing server...")
 
 	server.LoadEnvironment()

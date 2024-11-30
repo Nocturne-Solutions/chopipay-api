@@ -28,37 +28,31 @@ type Initialization struct {
 	shopService                services.ShopService
 	PersonalService            services.PersonalService
 	personalCredentialsService services.PersonalCredentialsService
+	userService                services.UserService
+	authService                services.AuthService
 	/*	Controllers */
-	SalesCtrl    business.SalesController
-	ProductCtrl  controllers.ProductController
-	ShopCtrl     controllers.ShopController
-	PersonalCtrl controllers.PersonalController
+	SalesCtrl      business.SalesController
+	ProductCtrl    controllers.ProductController
+	ShopCtrl       controllers.ShopController
+	PersonalCtrl   controllers.PersonalController
+	UserCtrl       controllers.UserController
+	AuthController controllers.AuthController
 }
 
 func NewDiInit(salesRepo pg.SalesRepository,
-	productRepo pg.ProductRepository,
-	shopRepo pg.ShopRepository,
-	personalRepo pg.PersonalRepository,
-	personalCredentialsRepo pg.PersonalCredentialsRepository,
-	mpMerchantOrderPaymentsRepo pg.MpMerchantOrderPaymentsRepository,
-	mpMerchantOrderRepo pg.MpMerchantOrderRepository,
-	mpPayerRepo pg.MpPayerRepository,
-	mpPaymentRepo pg.MpPaymentRepository,
-	paymentMethodRepo pg.PaymentMethodRepository,
-	saleProductsRepo pg.SaleProductsRepository,
-	saleStatusRepo pg.SalesStatusRepository,
-	userRepo pg.UserRepository,
+	productRepo pg.ProductRepository, shopRepo pg.ShopRepository, personalRepo pg.PersonalRepository,
+	personalCredentialsRepo pg.PersonalCredentialsRepository, mpMerchantOrderPaymentsRepo pg.MpMerchantOrderPaymentsRepository,
+	mpMerchantOrderRepo pg.MpMerchantOrderRepository, mpPayerRepo pg.MpPayerRepository, mpPaymentRepo pg.MpPaymentRepository,
+	paymentMethodRepo pg.PaymentMethodRepository, saleProductsRepo pg.SaleProductsRepository,
+	saleStatusRepo pg.SalesStatusRepository, userRepo pg.UserRepository,
 	/*	Services */
-	salesServices services.SalesService,
-	productServices services.ProductService,
-	shopService services.ShopService,
-	personalService services.PersonalService,
-	personalCredentialsService services.PersonalCredentialsService,
+	salesServices services.SalesService, productServices services.ProductService, shopService services.ShopService,
+	personalService services.PersonalService, personalCredentialsService services.PersonalCredentialsService,
+	userService services.UserService, authService services.AuthService,
 	/*	Controllers */
-	salesCtrl business.SalesController,
-	productCtrl controllers.ProductController,
-	shopCtrl controllers.ShopController,
-	personalCtrl controllers.PersonalController) *Initialization {
+	salesCtrl business.SalesController, productCtrl controllers.ProductController,
+	shopCtrl controllers.ShopController, personalCtrl controllers.PersonalController,
+	UserCtrl controllers.UserController, AuthController controllers.AuthController) *Initialization {
 	return &Initialization{
 		/*	Repositories */
 		salesRepo:                   salesRepo,
@@ -80,10 +74,14 @@ func NewDiInit(salesRepo pg.SalesRepository,
 		shopService:                shopService,
 		PersonalService:            personalService,
 		personalCredentialsService: personalCredentialsService,
+		userService:                userService,
+		authService:                authService,
 		/*	Controllers */
-		SalesCtrl:    salesCtrl,
-		ProductCtrl:  productCtrl,
-		ShopCtrl:     shopCtrl,
-		PersonalCtrl: personalCtrl,
+		SalesCtrl:      salesCtrl,
+		ProductCtrl:    productCtrl,
+		ShopCtrl:       shopCtrl,
+		PersonalCtrl:   personalCtrl,
+		UserCtrl:       UserCtrl,
+		AuthController: AuthController,
 	}
 }

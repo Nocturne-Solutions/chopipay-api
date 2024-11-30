@@ -39,20 +39,25 @@ var productServiceSet = wire.NewSet(services.NewProductService)
 var shopServiceSet = wire.NewSet(services.NewShopService)
 var personalServiceSet = wire.NewSet(services.NewPersonalService)
 var personalCredentialsServiceSet = wire.NewSet(services.NewPersonalCredentialsService)
+var userServiceSet = wire.NewSet(services.NewUserService)
+var authServiceSet = wire.NewSet(services.NewAuthService)
 
 /*	Controllers */
 var salesCtrlSet = wire.NewSet(business.NewSalesController)
 var productCtrlSet = wire.NewSet(controllers.NewProductController)
 var shopCtrlSet = wire.NewSet(controllers.NewShopController)
 var personalCtrlSet = wire.NewSet(controllers.NewPersonalController)
+var userCtrlSet = wire.NewSet(controllers.NewUserController)
+var authCtrlSet = wire.NewSet(controllers.NewAuthController)
 
 func Init() *Initialization {
 	wire.Build(NewDiInit,
 		envVars, pgDb,
 		/*	Controllers */
-		salesCtrlSet, productCtrlSet, shopCtrlSet, personalCtrlSet,
+		salesCtrlSet, productCtrlSet, shopCtrlSet, personalCtrlSet, userCtrlSet, authCtrlSet,
 		/*	Services */
-		salesServiceSet, productServiceSet, shopServiceSet, personalServiceSet, personalCredentialsServiceSet,
+		salesServiceSet, productServiceSet, shopServiceSet, personalServiceSet, personalCredentialsServiceSet, userServiceSet,
+		authServiceSet,
 		/*	Repositories */
 		salesRepoSet, productRepoSet, shopRepoSet, personalRepoSet, personalCredentialsRepoSet, mpMerchantOrderPaymentsRepoSet,
 		mpMerchantOrderRepoSet, mpPayerRepoSet, mpPaymentRepoSet, paymentMethodRepoSet, saleProductsRepoSet, saleStatusRepoSet,
