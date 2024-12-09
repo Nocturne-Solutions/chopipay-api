@@ -17,6 +17,7 @@ type PersonalRepository interface {
 	Delete(personal *entities.Personal) error
 	GetPersonalCredentialsByUsername(username string) (*entities.PersonalCredentials, error)
 	GetPersonalCredentialsByShopID(shopID int) (*entities.PersonalCredentials, error)
+	GetPersonalCredentialsByPersonalId(personalId int) (*entities.PersonalCredentials, error)
 }
 
 type PersonalRepositoryImpl struct {
@@ -92,6 +93,19 @@ func (r *PersonalRepositoryImpl) GetPersonalCredentialsByShopID(shopID int) (*en
 
 	if err != nil {
 		return nil, errors.New("Error getting personal credentials by shopID: " + err.Error())
+	}
+	return personalCredentials, nil
+}
+
+func (r *PersonalRepositoryImpl) GetPersonalCredentialsByPersonalId(personalId int) (*entities.PersonalCredentials, error) {
+	personalCredentials := &entities.PersonalCredentials{}
+	err := r.Db.Model(personalCredentials).
+		Join("JOIN personals AS personal ON personal.id = personal_credentials.personal_id").
+		Where("personal.id = ?", personalId).
+		Select(context.Background())
+
+	if err != nil {
+		return nil, errors.New("Error getting personal credentials by personalId: " + err.Error())
 	}
 	return personalCredentials, nil
 }

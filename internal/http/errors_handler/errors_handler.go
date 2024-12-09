@@ -9,8 +9,8 @@ import (
 )
 
 func ErrorHandler(c *gin.Context, err error, errMsg string) {
-	errMsg = fmt.Sprintf("%s: %s", errMsg, err.Error())
-	log.Println(errMsg)
+	logError := fmt.Sprintf("%s: %s", errMsg, err.Error())
+	log.Println(logError)
 	c.JSON(http.StatusInternalServerError, gin.H{
 		"error": errMsg,
 	})

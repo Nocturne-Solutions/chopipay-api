@@ -14,6 +14,7 @@ type PersonalService interface {
 	Delete(personal *entities.Personal) error
 	GetPersonalCredentialsByUsername(username string) (*entities.PersonalCredentials, error)
 	GetPersonalCredentialsByShopID(shopID int) (*entities.PersonalCredentials, error)
+	GetPersonalCredentialsByPersonalId(personalId int) (*entities.PersonalCredentials, error)
 }
 
 type PersonalServiceImpl struct {
@@ -77,6 +78,15 @@ func (s *PersonalServiceImpl) GetPersonalCredentialsByUsername(username string) 
 
 func (s *PersonalServiceImpl) GetPersonalCredentialsByShopID(shopID int) (*entities.PersonalCredentials, error) {
 	personalCredentials, err := s.personalRepository.GetPersonalCredentialsByShopID(shopID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return personalCredentials, nil
+}
+
+func (s *PersonalServiceImpl) GetPersonalCredentialsByPersonalId(personalId int) (*entities.PersonalCredentials, error) {
+	personalCredentials, err := s.personalRepository.GetPersonalCredentialsByPersonalId(personalId)
 	if err != nil {
 		log.Println(err)
 		return nil, err

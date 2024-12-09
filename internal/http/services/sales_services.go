@@ -5,6 +5,7 @@ import (
 	mpPreferenceServices "chopipay/internal/integrations/mercadopago/preference"
 	"chopipay/internal/repository/pg"
 	"github.com/mercadopago/sdk-go/pkg/preference"
+	"log"
 	"time"
 
 	dtos "chopipay/internal/models/dto"
@@ -43,21 +44,25 @@ func (s SalesServiceImpl) Create(sale *dtos.SaleDTO, currentUser string, isPrefe
 	sale.SaleID = newSaleCreated.ID
 	sale.StatusID = newSaleCreated.StatusID
 
-	if isPreference {
-		personalCredentials, err := s.personalRepository.GetPersonalCredentialsByUsername(currentUser)
-		if err != nil {
-			return nil, err
-		}
+	go func() {
+		if isPreference {
+			personalCredentials, err := s.personalRepository.GetPersonalCredentialsByUsername(currentUser)
+			if err != nil {
+				log.Printf("%s Error getting personal credentials: %v", s.logToken, err)
+				return
+			}
 
-		preferenceClient := mpClientServices.GetClient(personalCredentials.AccessToken, "preference").(preference.Client)
+			preferenceClient := mpClientServices.GetClient(personalCredentials.AccessToken, "preference").(preference.Client)
 
-		productPreferenceDTO, err := mpPreferenceServices.CreatePreference(preferenceClient, sale.ProductsDTO, sale.PersonalID)
-		if err != nil {
-			return nil, err
+			productPreferenceDTO, err := mpPreferenceServices.CreatePreference(preferenceClient, sale.ProductsDTO, sale.PersonalID)
+			if err != nil {
+				log.Printf("%s Error creating preference: %v", s.logToken, err)
+			}
+			sale.PaymentPoint = productPreferenceDTO.PaymentPoint
+			sale.SandboxPaymentPoint = productPreferenceDTO.SandboxPaymentPoint
 		}
-		sale.PaymentPoint = productPreferenceDTO.PaymentPoint
-		sale.SandboxPaymentPoint = productPreferenceDTO.SandboxPaymentPoint
-	}
+	}()
+
 	return sale, nil
 }
 
@@ -79,7 +84,7 @@ func (s SalesServiceImpl) summarizeProducts(products []dtos.ProductDTO) float64 
 
 func NewSalesService(salesRepository pg.SalesRepository, personalRepository pg.PersonalRepository) SalesService {
 	return &SalesServiceImpl{
-		logToken:           "SalesService | ",
+		logToken:           "[SalesService]",
 		salesRepository:    salesRepository,
 		personalRepository: personalRepository,
 	}

@@ -39,7 +39,7 @@ func PaymentNotification(c *gin.Context) {
 		param_id = param_data_id
 	}
 
-	log.Printf(logTag+"Params: id=%s, productId=%s, topic=%s", param_id, paramPersonalId, param_topic)
+	log.Printf(logTag+"Params: id=%s, personalId=%s, topic=%s", param_id, paramPersonalId, param_topic)
 	if param_id == "" || param_topic == "" {
 		log.Printf(logTag+"id(%s) or topic(%s) is empty", param_id, param_topic)
 		returnSuccess(c)
@@ -53,20 +53,20 @@ func PaymentNotification(c *gin.Context) {
 		return
 	}
 
-	productId, err := strconv.Atoi(paramPersonalId)
-	if err != nil || productId == 0 {
-		log.Printf(logTag+"error converting productId %s. Cause: %s", paramPersonalId, err.Error())
+	personalId, err := strconv.Atoi(paramPersonalId)
+	if err != nil || personalId == 0 {
+		log.Printf(logTag+"error converting personalId %s. Cause: %s", paramPersonalId, err.Error())
 		returnSuccess(c)
 		return
 	}
 
-	log.Printf(logTag+"Values: id=%d, productId=%d, topic=%s", id, productId, param_topic)
+	log.Printf(logTag+"Values: id=%d, personalId=%d, topic=%s", id, personalId, param_topic)
 
 	log.Printf("%s processing %s: %d", logTag, param_topic, id)
 	productPayment := dtos.ProductMpPaymentDTO{
-		ProductID: productId,
-		ID:        id,
-		Topic:     param_topic,
+		PersonalID: personalId,
+		ID:         id,
+		Topic:      param_topic,
 	}
 
 	productPaymentByte, err := productPayment.ToByte()

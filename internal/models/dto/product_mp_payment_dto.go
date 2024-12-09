@@ -5,9 +5,9 @@ import (
 )
 
 type ProductMpPaymentDTO struct {
-	ID int `json:"id"`
-	ProductID int `json:"product_id"`
-	Topic string `json:"topic"`
+	ID         int    `json:"id"`
+	PersonalID int    `json:"personal_id"`
+	Topic      string `json:"topic"`
 }
 
 func (p *ProductMpPaymentDTO) ToByte() ([]byte, error) {

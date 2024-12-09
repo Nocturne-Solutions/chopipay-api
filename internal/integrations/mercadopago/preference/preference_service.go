@@ -14,7 +14,7 @@ import (
 	"github.com/mercadopago/sdk-go/pkg/preference"
 )
 
-const logTag = "MP_PreferenceServices | "
+const logTag = "[MP_PreferenceServices] "
 
 func CreatePreference(preferenceCli preference.Client, products []dto.ProductDTO, personalId int) (*dto.ProductPreferenceDTO, error) {
 	log.Println(logTag + "Creating MercadoPago preference...")
