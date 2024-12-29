@@ -39,5 +39,7 @@ func (p *Processor) Process() error {
 
 	log.Println(logTag+"mercadopago payment found: ", paymentResponse)
 
+	// TODO insert values into database
+
 	return nil
 }

@@ -44,24 +44,23 @@ func (s SalesServiceImpl) Create(sale *dtos.SaleDTO, currentUser string, isPrefe
 	sale.SaleID = newSaleCreated.ID
 	sale.StatusID = newSaleCreated.StatusID
 
-	go func() {
-		if isPreference {
-			personalCredentials, err := s.personalRepository.GetPersonalCredentialsByUsername(currentUser)
-			if err != nil {
-				log.Printf("%s Error getting personal credentials: %v", s.logToken, err)
-				return
-			}
-
-			preferenceClient := mpClientServices.GetClient(personalCredentials.AccessToken, "preference").(preference.Client)
-
-			productPreferenceDTO, err := mpPreferenceServices.CreatePreference(preferenceClient, sale.ProductsDTO, sale.PersonalID)
-			if err != nil {
-				log.Printf("%s Error creating preference: %v", s.logToken, err)
-			}
-			sale.PaymentPoint = productPreferenceDTO.PaymentPoint
-			sale.SandboxPaymentPoint = productPreferenceDTO.SandboxPaymentPoint
+	if isPreference {
+		personalCredentials, err := s.personalRepository.GetPersonalCredentialsByUsername(currentUser)
+		if err != nil {
+			log.Printf("%s Error getting personal credentials: %v", s.logToken, err)
+			return nil, err
 		}
-	}()
+
+		preferenceClient := mpClientServices.GetClient(personalCredentials.AccessToken, "preference").(preference.Client)
+
+		productPreferenceDTO, err := mpPreferenceServices.CreatePreference(preferenceClient, sale.ProductsDTO, sale.PersonalID)
+		if err != nil {
+			log.Printf("%s Error creating preference: %v", s.logToken, err)
+			return nil, err
+		}
+		sale.PaymentPoint = productPreferenceDTO.PaymentPoint
+		sale.SandboxPaymentPoint = productPreferenceDTO.SandboxPaymentPoint
+	}
 
 	return sale, nil
 }

@@ -1,8 +1,8 @@
 package security
 
 import (
-	"time"
 	"errors"
+	"time"
 
 	"chopipay/config/server"
 	"chopipay/internal/models/dto"
@@ -27,10 +27,10 @@ func CreateAccessToken(username string) (*dto.Jwt, error) {
 	expIn := accessTokenDuration.Seconds()
 
 	return &dto.Jwt{
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
 		RefreshToken: refresToken,
-		Iat: iat,
-		ExpIn: expIn,
+		Iat:          iat,
+		ExpIn:        expIn,
 	}, nil
 }
 
@@ -40,17 +40,17 @@ func RefreshToken(refreshToken string) (*dto.Jwt, error) {
 		return nil, err
 	}
 
-	token, err := jwt.Parse(refreshToken, 
-							func(token *jwt.Token) (interface{}, error) {
-								_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
-								
-								if !validMethod {
-									return nil, errors.New("invalid signing method")
-								}
-								
-								return []byte(secretKey), nil
-							})
-	
+	token, err := jwt.Parse(refreshToken,
+		func(token *jwt.Token) (interface{}, error) {
+			_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
+
+			if !validMethod {
+				return nil, errors.New("invalid signing method")
+			}
+
+			return []byte(secretKey), nil
+		})
+
 	if err != nil {
 		return nil, errors.New("invalid token")
 	}
@@ -71,17 +71,17 @@ func ValidateAcessToken(tokenString string) (bool, error) {
 		return false, err
 	}
 
-	token, err := jwt.Parse(tokenString, 
-							func(token *jwt.Token) (interface{}, error) {
-								_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
-								
-								if !validMethod {
-									return nil, errors.New("invalid signing method")
-								}
-								
-								return []byte(secretKey), nil
-							})
-	
+	token, err := jwt.Parse(tokenString,
+		func(token *jwt.Token) (interface{}, error) {
+			_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
+
+			if !validMethod {
+				return nil, errors.New("invalid signing method")
+			}
+
+			return []byte(secretKey), nil
+		})
+
 	if err != nil {
 		return false, errors.New("invalid token")
 	}
@@ -93,7 +93,7 @@ func ValidateAcessToken(tokenString string) (bool, error) {
 
 	username := token.Claims.(jwt.MapClaims)["username"].(string)
 
-	return (username != ""), err 
+	return (username != ""), err
 }
 
 func generateJwt(username string, tokenType string) (string, error) {
@@ -106,9 +106,9 @@ func generateJwt(username string, tokenType string) (string, error) {
 
 	new_jwt := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp": exp,
-		"iat": time.Now().Unix(),
-		"type": tokenType,
+		"exp":      exp,
+		"iat":      time.Now().Unix(),
+		"type":     tokenType,
 	})
 
 	secretKey, err := getSecretKey()
@@ -120,7 +120,7 @@ func generateJwt(username string, tokenType string) (string, error) {
 }
 
 func getSecretKey() (string, error) {
-	secretKey := server.EnvVars["JWT_SECRET_KEY"]
+	secretKey := server.GetEnvironment().JwtSecretKey
 	if secretKey == "" {
 		return "", errors.New("variable JWT_SECRET_KEY not found")
 	}

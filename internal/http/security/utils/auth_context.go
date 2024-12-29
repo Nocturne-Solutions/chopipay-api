@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"chopipay/config/server"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func GetCurrentUser(c *gin.Context) (string, error) {
@@ -32,17 +32,17 @@ func getClaims(c *gin.Context) (jwt.MapClaims, error) {
 		return nil, errors.New("error getting secret key")
 	}
 
-	token, err := jwt.Parse(tokenString, 
-							func(token *jwt.Token) (interface{}, error) {
-								_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
-								
-								if !validMethod {
-									return nil, errors.New("invalid signing method")
-								}
-								
-								return []byte(secretKey), nil
-							})
-	
+	token, err := jwt.Parse(tokenString,
+		func(token *jwt.Token) (interface{}, error) {
+			_, validMethod := token.Method.(*jwt.SigningMethodHMAC)
+
+			if !validMethod {
+				return nil, errors.New("invalid signing method")
+			}
+
+			return []byte(secretKey), nil
+		})
+
 	if err != nil {
 		return nil, errors.New("invalid token")
 	}
@@ -52,7 +52,7 @@ func getClaims(c *gin.Context) (jwt.MapClaims, error) {
 }
 
 func getSecretKey() (string, error) {
-	secretKey := server.EnvVars["JWT_SECRET_KEY"]
+	secretKey := server.GetEnvironment().JwtSecretKey
 	if secretKey == "" {
 		return "", errors.New("variable JWT_SECRET_KEY not found")
 	}

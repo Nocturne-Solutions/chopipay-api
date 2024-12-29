@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"chopipay/config/server"
 	"context"
 	"log"
 
@@ -9,16 +10,12 @@ import (
 
 var Db *pg.DB
 
-func InitConnection(envVars map[string]string) *pg.DB {
-	host := envVars["PG_DB_HOST"]
-	port := envVars["PG_DB_PORT"]
-	user := envVars["PG_DB_USER"]
-	password := envVars["PG_DB_PASSWORD"]
-	database := envVars["PG_DB_NAME"]
-
-	if host == "" || port == "" || user == "" || password == "" || database == "" {
-		log.Panic("Missing environment variables for postgres database connection")
-	}
+func InitConnection() *pg.DB {
+	host := server.GetEnvironment().PgDbHost
+	port := server.GetEnvironment().PgDbPort
+	user := server.GetEnvironment().PgDbUser
+	password := server.GetEnvironment().PgDbPassword
+	database := server.GetEnvironment().PgDbName
 
 	Db = pg.Connect(&pg.Options{
 		Addr:     host + ":" + port,

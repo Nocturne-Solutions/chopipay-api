@@ -35,13 +35,13 @@ func main() {
 	server.LoadEnvironment()
 	log.Println("Environment variables initialized")
 
-	pg.InitConnection(server.EnvVars)
+	pg.InitConnection()
 	defer pg.CloseConnection()
 	log.Println("Database connection initialized")
 
 	init := di.Init()
 
-	rabbitmq.InitRabbitMQ(server.EnvVars)
+	rabbitmq.InitRabbitMQ()
 	defer rabbitmq.CloseRabbitMQChannel()
 	log.Println("RabbitMQ connection initialized")
 	rabbitmq.DeclareQueue(rmq.PreferenceNotificationQueue)

@@ -19,8 +19,7 @@ import (
 // Injectors from injector.go:
 
 func Init() *Initialization {
-	v := server.LoadEnvironment()
-	db := pg.InitConnection(v)
+	db := pg.InitConnection()
 	salesRepository := pg2.NewSalesRepository(db)
 	productRepository := pg2.NewProductRepository(db)
 	shopRepository := pg2.NewShopRepository(db)

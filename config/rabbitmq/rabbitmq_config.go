@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"chopipay/config/server"
 	"fmt"
 	"log"
 
@@ -9,16 +10,12 @@ import (
 
 var Ch *amqp.Channel
 
-func InitRabbitMQ(envVars map[string]string) {
-	host := envVars["RABBITMQ_HOST"]
-	port := envVars["RABBITMQ_PORT"]
-	user := envVars["RABBITMQ_USER"]
-	password := envVars["RABBITMQ_PASSWORD"]
-	vhost := envVars["RABBITMQ_VHOST"]
-
-	if host == "" || port == "" || user == "" || password == "" || vhost == "" {
-		log.Fatal("Missing environment variables for queues connection")
-	}
+func InitRabbitMQ() {
+	host := server.GetEnvironment().RabbitmqHost
+	port := server.GetEnvironment().RabbitmqPort
+	user := server.GetEnvironment().RabbitmqUser
+	password := server.GetEnvironment().RabbitmqPassword
+	vhost := server.GetEnvironment().RabbitmqVhost
 
 	url := fmt.Sprintf("amqp://%s:%s@%s:%s/%s", user, password, host, port, vhost)
 

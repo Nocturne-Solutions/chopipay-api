@@ -19,14 +19,14 @@ const logTag = "[MP_PreferenceServices] "
 func CreatePreference(preferenceCli preference.Client, products []dto.ProductDTO, personalId int) (*dto.ProductPreferenceDTO, error) {
 	log.Println(logTag + "Creating MercadoPago preference...")
 
-	appURL := server.EnvVars["APP_URL"]
+	appURL := server.GetEnvironment().AppUrl
 	if appURL == "" {
 		errorMessage := logTag + "variable APP_URL not found"
 		log.Println(errorMessage)
 		return nil, errors.New(errorMessage)
 	}
 
-	profile := server.EnvVars["PROFILE"]
+	profile := server.GetEnvironment().Profile
 	if profile == "" {
 		profile = "env"
 	}
